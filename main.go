@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -8,28 +9,9 @@ import (
 
 func main() {
 	// Parse operation from args
-	var operation func(int, int) int
-	switch os.Args[1] {
-	case "+":
-		operation = func(a, b int) int {
-			return a + b
-		}
-	case "-":
-		operation = func(a, b int) int {
-			return a - b
-		}
-	case "*":
-		operation = func(a, b int) int {
-			return a * b
-		}
-	case "/":
-		operation = func(a, b int) int {
-			return a / b
-		}
-	case "%":
-		operation = func(a, b int) int {
-			return a % b
-		}
+	operation, err := ParseOperation(os.Args[1])
+	if err != nil {
+		log.Fatal(err)
 	}
 	// Parse parameters from args
 	a, err := strconv.Atoi(os.Args[2])
@@ -44,4 +26,31 @@ func main() {
 	result := operation(a, b)
 	// Print result
 	log.Println(result)
+}
+
+func ParseOperation(op string) (func(int, int) int, error) {
+	switch op {
+	case "+":
+		return func(a, b int) int {
+			return a + b
+		}, nil
+	case "-":
+		return func(a, b int) int {
+			return a - b
+		}, nil
+	case "*":
+		return func(a, b int) int {
+			return a * b
+		}, nil
+	case "/":
+		return func(a, b int) int {
+			return a / b
+		}, nil
+	case "%":
+		return func(a, b int) int {
+			return a % b
+		}, nil
+	default:
+		return nil, fmt.Errorf("Unrecognized operation: %s", op)
+	}
 }
